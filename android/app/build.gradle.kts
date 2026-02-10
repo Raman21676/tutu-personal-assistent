@@ -38,7 +38,7 @@ android {
     // External native build configuration for llama.cpp
     externalNativeBuild {
         cmake {
-            path = file("../../../native/android/CMakeLists.txt")
+            path = file("../../native/android/CMakeLists.txt")
             version = "3.22.1"
         }
     }
