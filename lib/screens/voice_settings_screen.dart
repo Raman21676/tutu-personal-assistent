@@ -31,7 +31,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
     await _voiceService.initialize();
     final languages = await _voiceService.getAvailableLanguages();
     setState(() {
-      _availableLanguages = languages;
+      _availableLanguages = languages.cast<String>();
       _isLoading = false;
     });
   }
