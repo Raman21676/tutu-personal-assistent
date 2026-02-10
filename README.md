@@ -1,43 +1,59 @@
-# TuTu - Personal AI Agent Manager
+# TuTu - Personal Offline AI Assistant
 
-TuTu is a comprehensive Flutter Android app that serves as your personal AI agent manager with persistent memory, local RAG (Retrieval Augmented Generation) system, voice synthesis, facial recognition, and OpenRouter integration.
+TuTu is a fully offline-capable AI personal assistant built with Flutter. Unlike traditional AI apps that depend on cloud APIs, TuTu runs a local LLM (SmolLM2-360M) directly on your device - ensuring complete privacy, zero costs, and 100% availability.
 
-## 🌟 Features
+## 🌟 Key Features
 
-### Core Features
-- **AI Agent Management**: Create and customize multiple AI companions with unique personalities
-- **Persistent Memory**: Multi-layer memory system (Active, Short-term, Long-term with RAG)
-- **Offline QA System**: 1000+ question knowledge base for offline responses
-- **Multi-Provider Support**: OpenAI, Anthropic, Gemini, DeepSeek, OpenRouter, Custom endpoints
+### 🔒 Privacy First
+- **100% Offline** - No internet connection required
+- **No Data Leaves Device** - All AI processing happens locally
+- **Zero API Costs** - No subscriptions, no usage fees
+- **Complete Control** - Your data, your device, your rules
 
-### Advanced Features
-- **Voice Synthesis**: Text-to-speech with customizable pitch, rate, and gender
-- **Face Recognition**: Local face detection and recognition using ML Kit
-- **OpenRouter Integration**: Full dashboard with balance tracking and model selection
-- **Privacy First**: All data stored locally, no cloud dependencies
+### 🤖 AI Capabilities
+- **Local LLM** - SmolLM2-360M runs directly on your device
+- **Custom Agents** - Create multiple AI companions with unique personalities
+- **Persistent Memory** - Agents remember conversations and learn preferences
+- **Offline QA** - 1000+ question knowledge base
+
+### 🎨 Advanced Features
+- **Voice Synthesis** - Offline text-to-speech
+- **Face Recognition** - Local face detection and recognition using ML Kit
+- **RAG System** - Retrieval Augmented Generation for context-aware responses
+- **Multi-Agent** - Switch between different AI personas
 
 ## 🏗️ Project Structure
 
 ```
 tutu_app/
+├── AI_MEMORY.md              # Project progress tracker
+├── README.md                 # This file
+├── pubspec.yaml              # Dependencies
+│
+├── android/                  # Android-specific config with NDK
+│
+├── assets/
+│   ├── models/
+│   │   └── SmolLM2-360M-Instruct-Q4_K_M.gguf  # Local LLM (~258MB)
+│   ├── qa_bank.json          # Offline knowledge base
+│   └── images/               # App images
+│
 ├── lib/
-│   ├── main.dart                    # App entry point
-│   ├── models/                      # Data models
+│   ├── main.dart             # App entry point
+│   ├── models/               # Data models
 │   │   ├── agent_model.dart
 │   │   ├── message_model.dart
 │   │   ├── memory_model.dart
-│   │   ├── face_model.dart
-│   │   ├── qa_bank_model.dart
-│   │   └── api_config_model.dart
-│   ├── services/                    # Business logic
-│   │   ├── storage_service.dart     # Local database (Sembast)
-│   │   ├── api_service.dart         # LLM API communication
-│   │   ├── rag_service.dart         # RAG implementation
-│   │   ├── offline_qa_service.dart  # Offline Q&A system
-│   │   ├── voice_service.dart       # TTS functionality
-│   │   ├── face_recognition_service.dart
-│   │   └── openrouter_service.dart
-│   ├── screens/                     # UI Screens
+│   │   └── qa_bank_model.dart
+│   ├── services/             # Business logic
+│   │   ├── storage_service.dart
+│   │   ├── local_llm_service.dart     # ⭐ Local LLM inference
+│   │   ├── llama_bindings.dart        # ⭐ FFI bindings
+│   │   ├── rag_service.dart
+│   │   ├── offline_qa_service.dart
+│   │   ├── voice_service.dart
+│   │   └── face_recognition_service.dart
+│   ├── screens/              # UI Screens
 │   │   ├── splash_screen.dart
 │   │   ├── onboarding_screen.dart
 │   │   ├── home_screen.dart
@@ -45,37 +61,35 @@ tutu_app/
 │   │   ├── agent_list_screen.dart
 │   │   ├── create_agent_screen.dart
 │   │   ├── settings_screen.dart
-│   │   ├── api_setup_screen.dart
+│   │   ├── model_manager_screen.dart  # ⭐ Manage AI models
 │   │   ├── voice_settings_screen.dart
-│   │   ├── openrouter_dashboard_screen.dart
 │   │   └── camera_screen.dart
-│   ├── widgets/                     # Reusable UI components
-│   │   ├── agent_card.dart
-│   │   ├── message_bubble.dart
-│   │   ├── custom_app_bar.dart
-│   │   └── typing_indicator.dart
-│   └── utils/                       # Utilities
-│       ├── constants.dart
-│       ├── themes.dart
-│       └── helpers.dart
-├── assets/
-│   ├── qa_bank.json                 # Offline knowledge base
-│   └── images/
-└── pubspec.yaml
+│   ├── widgets/              # Reusable UI components
+│   └── utils/                # Utilities
+│
+└── native/                   # ⭐ Native code for LLM
+    ├── android/
+    │   └── CMakeLists.txt    # Android NDK build config
+    └── cpp/
+        └── llama_bridge.cpp  # C++ FFI bridge
 ```
 
 ## 📦 Dependencies
 
 ```yaml
 dependencies:
+  # Core
+  flutter:
+    sdk: flutter
+  
+  # FFI for native C++ bindings
+  ffi: ^2.1.0
+  
   # Storage & Database
   shared_preferences: ^2.2.2
   sqflite: ^2.3.0
   path_provider: ^2.1.1
   sembast: ^3.5.0
-  
-  # Networking
-  http: ^1.1.0
   
   # State Management
   provider: ^6.1.1
@@ -87,29 +101,35 @@ dependencies:
   
   # UI
   flutter_markdown: ^0.6.18
+  animations: ^2.0.11
+  flutter_animate: ^4.5.2
   
-  # Voice & Camera
-  flutter_tts: ^3.8.5
-  camera: ^0.10.5+9
-  google_mlkit_face_detection: ^0.9.0
+  # Voice
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
+  permission_handler: ^11.3.0
+  just_audio: ^0.9.42
+  
+  # Camera & Vision
+  camera: ^0.11.0
+  image_picker: ^1.0.7
+  google_mlkit_face_detection: ^0.13.0
   image: ^4.1.3
-  
-  # Web & URL
-  url_launcher: ^6.2.1
 ```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Flutter SDK 3.10.8 or higher
-- Android SDK
-- IDE (VS Code, Android Studio, etc.)
+- Android SDK with NDK (25.1.8937393)
+- IDE (VS Code, Android Studio)
+- 2GB+ free space for model files
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Raman21676/tutu-personal-assistent.git
    cd tutu_app
    ```
 
@@ -118,20 +138,24 @@ dependencies:
    flutter pub get
    ```
 
-3. **Run the app**
+3. **Build the native library** (Optional - for custom builds)
+   ```bash
+   # The app includes a pre-built native bridge
+   # For custom builds with full llama.cpp:
+   cd native/cpp
+   # Follow llama.cpp Android build instructions
+   ```
+
+4. **Run the app**
    ```bash
    flutter run
    ```
 
 ### Android Setup
 
-Add the following permissions to `android/app/src/main/AndroidManifest.xml`:
+Add the following to `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
-<!-- Internet -->
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 <!-- Camera -->
 <uses-permission android:name="android.permission.CAMERA" />
 
@@ -143,14 +167,20 @@ Add the following permissions to `android/app/src/main/AndroidManifest.xml`:
 
 ### First Launch
 1. Complete the onboarding process
-2. Set up your API key (OpenAI, OpenRouter, etc.) or skip for offline mode
-3. Start chatting with TuTu, the default assistant
+2. The app automatically extracts and loads the AI model (may take 1-2 minutes on first launch)
+3. Start chatting with TuTu, your default AI assistant
 
 ### Creating an Agent
 1. Tap the "+" button on the home screen
 2. Choose a role (Girlfriend, Lawyer, Teacher, etc.)
 3. Customize name, personality, avatar, and voice
 4. Start chatting!
+
+### Managing Models
+1. Go to Settings > Manage Models
+2. View installed models and their details
+3. Download additional models (optional)
+4. Switch between models
 
 ### Using Voice
 1. Go to Settings > Voice to configure TTS
@@ -162,130 +192,119 @@ Add the following permissions to `android/app/src/main/AndroidManifest.xml`:
 2. Position the face in the frame
 3. TuTu will recognize known faces or let you register new ones
 
-### OpenRouter Integration
-1. Go to Settings > OpenRouter Dashboard
-2. View balance, usage, and available models
-3. Select your preferred model for each agent
-
-## 🔧 Configuration
-
-### API Providers
-
-#### OpenAI
-- Get API key: https://platform.openai.com/api-keys
-- Default model: gpt-4-turbo-preview
-
-#### OpenRouter
-- Sign up: https://openrouter.ai
-- Access multiple models through single API
-- View pricing: https://openrouter.ai/models
-
-#### Anthropic (Claude)
-- Get API key: https://console.anthropic.com/settings/keys
-- Default model: claude-3-sonnet-20240229
-
-#### Google Gemini
-- Get API key: https://makersuite.google.com/app/apikey
-- Default model: gemini-pro
-
-#### DeepSeek
-- Get API key: https://platform.deepseek.com/api_keys
-- Default model: deepseek-chat
-
 ## 🔒 Privacy & Security
 
-- **Local Storage**: All data stored on device using Sembast/SQLite
-- **Face Data**: Never leaves your device, processed locally with ML Kit
-- **Conversations**: Stored locally, not synced to cloud
-- **API Keys**: Stored securely in SharedPreferences (consider encryption for production)
-- **Offline First**: Core functionality works without internet
+### Local-Only Processing
+- **AI Model**: Runs entirely on your device using llama.cpp
+- **Face Recognition**: Processed locally with Google ML Kit
+- **Voice Synthesis**: Device TTS, no cloud calls
+- **Data Storage**: All data stored in app documents directory
 
-## 🧠 Memory System
+### What This Means
+- ✅ No account required
+- ✅ No API keys to manage
+- ✅ No internet connection needed
+- ✅ No data sent to servers
+- ✅ No usage limits
+- ✅ No subscription fees
 
-TuTu implements a 4-layer memory system:
+### Data You Control
+- Conversation history
+- Agent configurations
+- Face recognition data
+- Voice preferences
+- Memory embeddings
 
-1. **Active Memory**: Last 20 messages in RAM
-2. **Short-term Memory**: Last 500 messages in SQLite
-3. **Long-term Memory**: All messages with TF-IDF search
-4. **Episodic Memory**: Important events, summaries, preferences
+## 🧠 Technical Details
 
-### RAG Implementation
-- Keyword extraction and indexing
-- TF-IDF scoring for relevance
-- Auto-summarization every 100 messages
-- Memory injection into LLM prompts
+### Local LLM Implementation
 
-## 🗣️ Voice Synthesis
+**Model**: SmolLM2-360M-Instruct-Q4_K_M
+- Size: ~258 MB
+- Parameters: 360M
+- Quantization: Q4_K_M (4-bit)
+- Context Length: 2048 tokens
+- Inference: llama.cpp via FFI
 
-- Uses `flutter_tts` package
-- Adjustable speech rate, pitch, and volume
-- Male/Female voice selection per agent
-- Offline text-to-speech support
+**Performance**
+- First load: 5-15 seconds (model extraction)
+- Subsequent loads: 1-3 seconds
+- Inference speed: 5-20 tokens/second (device dependent)
+- Memory usage: ~500MB during inference
 
-## 👤 Face Recognition
+### Architecture
 
-- Uses Google ML Kit Face Detection
-- Custom face encoding (20-30 dimensional vector)
-- Euclidean distance matching (threshold: 0.6)
-- Multiple face versions per person
-- Completely offline processing
-
-## 📊 OpenRouter Dashboard
-
-- Real-time balance tracking
-- Usage statistics
-- Model browser with pricing
-- Category filtering (Free, Cheap, Balanced, Premium)
-- Direct top-up links
-
-## 🎨 Customization
-
-### Themes
-- Light and Dark mode support
-- Material Design 3
-- Purple/Blue gradient accent colors
-
-### Agent Personalities
-Create agents with custom:
-- Names and avatars
-- Roles and personalities
-- Voice gender
-- Preferred AI models
+```
+User Input
+    ↓
+Chat Screen
+    ↓
+LocalLLMService (Dart)
+    ↓
+FFI Bindings (dart:ffi)
+    ↓
+Native Bridge (C++)
+    ↓
+llama.cpp (Inference)
+    ↓
+Response
+```
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### Model Loading Issues
+**Problem**: "Failed to load model" error
+**Solution**: 
+- Ensure sufficient storage space (500MB+ free)
+- Restart the app
+- Check Settings > Manage Models for model integrity
 
-**API Key Not Working**
-- Verify the key is copied correctly
-- Check provider selection matches key type
-- Test connection in API Setup
+### Slow Responses
+**Problem**: AI responses are slow
+**Solution**:
+- Lower context size in settings (reduces memory usage)
+- Close other apps to free RAM
+- Use a more powerful device (newer phones perform better)
 
-**Voice Not Working**
-- Check TTS engine is installed on device
-- Verify voice settings in Settings > Voice
-- Some devices may need specific TTS app
+### Out of Memory
+**Problem**: App crashes during inference
+**Solution**:
+- The app will automatically fall back to offline QA
+- Clear conversation history in Settings
+- Use shorter messages
 
-**Camera Not Working**
+### Face Recognition Not Working
+**Problem**: Camera or face detection issues
+**Solution**:
 - Grant camera permissions in Android settings
-- Ensure device has camera hardware
-- Check for conflicting camera apps
+- Ensure adequate lighting
+- Try different angles
 
-**App Crashes on Startup**
-- Clear app data and restart
-- Check Flutter SDK version compatibility
-- Verify all dependencies are installed
+## 🗺️ Roadmap
 
-## 📝 Todo / Roadmap
+### Phase 1: Core (✅ Complete)
+- [x] Local LLM integration
+- [x] FFI bindings
+- [x] Model management
+- [x] Basic chat interface
 
-- [ ] Push notifications for agent messages
-- [ ] Cloud backup/sync option
+### Phase 2: Features (✅ Complete)
+- [x] Offline QA system
+- [x] RAG implementation
+- [x] Voice synthesis
+- [x] Face recognition
+
+### Phase 3: Polish (🔄 In Progress)
+- [ ] Streaming responses
+- [ ] Model quantization options
+- [ ] Conversation export/import
+- [ ] Widget support
+
+### Phase 4: Expansion (📅 Planned)
+- [ ] iOS support
+- [ ] Larger model support (1.7B+)
 - [ ] Agent-to-agent conversations
-- [ ] Image generation integration
-- [ ] Desktop/Web support
-- [ ] Widget support for home screen
-- [ ] Import/export agent configurations
-- [ ] Community agent marketplace
+- [ ] Community model marketplace
 
 ## 🤝 Contributing
 
@@ -302,18 +321,20 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
-- Flutter Team for the amazing framework
-- OpenAI, Anthropic, Google for AI APIs
-- OpenRouter for unified API access
-- ML Kit team for on-device ML capabilities
+- **Flutter Team** for the amazing framework
+- **llama.cpp** by Georgi Gerganov for on-device LLM inference
+- **SmolLM2** by HuggingFace for the efficient local model
+- **Google ML Kit** for on-device face detection
 
 ## 📞 Support
 
 For support, please:
 1. Check this README and in-app help
 2. Visit Settings > Help & Support
-3. Open an issue on GitHub
+3. Open an issue on GitHub: https://github.com/Raman21676/tutu-personal-assistent
 
 ---
 
-Built with ❤️ using Flutter
+Built with ❤️ using Flutter & llama.cpp
+
+**Privacy First. Always Available. Completely Yours.**
