@@ -6,6 +6,7 @@ import 'models/agent_model.dart';
 
 // Services
 import 'services/storage_service.dart';
+import 'services/local_llm_service.dart';
 
 // Screens
 import 'screens/splash_screen.dart';
@@ -15,10 +16,9 @@ import 'screens/agent_list_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/create_agent_screen.dart';
 import 'screens/settings_screen.dart';
-import 'screens/api_setup_screen.dart';
 import 'screens/voice_settings_screen.dart';
-import 'screens/openrouter_dashboard_screen.dart';
 import 'screens/camera_screen.dart';
+import 'screens/model_manager_screen.dart';
 
 // Utils
 import 'utils/constants.dart';
@@ -39,6 +39,9 @@ class TuTuApp extends StatelessWidget {
       providers: [
         Provider<StorageService>(
           create: (_) => StorageService(),
+        ),
+        ChangeNotifierProvider<LocalLLMService>(
+          create: (_) => LocalLLMService(),
         ),
       ],
       child: MaterialApp(
@@ -95,19 +98,9 @@ class TuTuApp extends StatelessWidget {
           builder: (_) => const SettingsScreen(),
         );
 
-      case Routes.apiSetup:
-        return MaterialPageRoute(
-          builder: (_) => const ApiSetupScreen(),
-        );
-
       case Routes.voiceSettings:
         return MaterialPageRoute(
           builder: (_) => const VoiceSettingsScreen(),
-        );
-
-      case Routes.openRouterDashboard:
-        return MaterialPageRoute(
-          builder: (_) => const OpenRouterDashboardScreen(),
         );
 
       case Routes.camera:
@@ -117,6 +110,11 @@ class TuTuApp extends StatelessWidget {
         }
         return MaterialPageRoute(
           builder: (_) => CameraScreen(agentId: agentId),
+        );
+
+      case Routes.modelManager:
+        return MaterialPageRoute(
+          builder: (_) => const ModelManagerScreen(),
         );
 
       default:

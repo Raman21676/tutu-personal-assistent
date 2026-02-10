@@ -2,17 +2,18 @@
 class AppConstants {
   // App Info
   static const String appName = 'TuTu';
-  static const String appVersion = '1.0.0';
-  static const String appTagline = 'Your Personal AI Agent Manager';
+  static const String appVersion = '2.0.0';
+  static const String appTagline = 'Your Personal Offline AI Assistant';
 
   // Storage Keys
-  static const String keyApiConfig = 'api_config';
   static const String keyUserName = 'user_name';
   static const String keyUserPreferences = 'user_preferences';
   static const String keyOnboardingCompleted = 'onboarding_completed';
   static const String keyVoiceSettings = 'voice_settings';
   static const String keyDarkMode = 'dark_mode';
   static const String keyAutoSpeak = 'auto_speak';
+  static const String keyModelPath = 'model_path';
+  static const String keyActiveModel = 'active_model';
 
   // Limits
   static const int maxAgents = 20;
@@ -23,12 +24,8 @@ class AppConstants {
   static const int maxImageSize = 512;
 
   // Timeouts
-  static const Duration apiTimeout = Duration(seconds: 60);
-  static const Duration connectionTimeout = Duration(seconds: 10);
-
-  // API Retry
-  static const int maxRetries = 3;
-  static const Duration baseRetryDelay = Duration(seconds: 1);
+  static const Duration inferenceTimeout = Duration(seconds: 120);
+  static const Duration modelLoadTimeout = Duration(seconds: 60);
 
   // UI
   static const double defaultPadding = 16.0;
@@ -53,6 +50,12 @@ class AppConstants {
   // Memory
   static const int summarizationThreshold = 100;
   static const int memoryExpirationDays = 365;
+
+  // Local LLM
+  static const int defaultContextSize = 2048;
+  static const int defaultThreads = 4;
+  static const double defaultTemperature = 0.7;
+  static const int defaultMaxTokens = 512;
 }
 
 /// Route names for navigation
@@ -64,33 +67,34 @@ class Routes {
   static const String chat = '/chat';
   static const String createAgent = '/create-agent';
   static const String settings = '/settings';
-  static const String apiSetup = '/api-setup';
   static const String voiceSettings = '/voice-settings';
   static const String camera = '/camera';
-  static const String openRouterDashboard = '/openrouter-dashboard';
+  static const String modelManager = '/model-manager';
 }
 
 /// Asset paths
 class Assets {
   static const String qaBank = 'assets/qa_bank.json';
+  static const String defaultModel = 'assets/models/SmolLM2-360M-Instruct-Q4_K_M.gguf';
   static const String imagesDir = 'assets/images/';
+  static const String modelsDir = 'assets/models/';
 }
 
 /// Default messages
 class DefaultMessages {
   static const String welcomeMessage = 
-      'Hello! I\'m TuTu, your AI assistant. I can help you create agents, answer questions about the app, or just chat. What would you like to do?';
-  
-  static const String apiKeyRequired = 
-      'To chat with me and other agents, please set up an API key in Settings. You can use OpenAI, OpenRouter, or other providers.';
+      'Hello! I\'m TuTu, your personal AI assistant. I run entirely on your device - no internet needed! I can help you create agents, answer questions, or just chat. What would you like to do?';
   
   static const String offlineMessage = 
-      'I\'m currently in offline mode. I can answer questions from my knowledge base, but for more advanced conversations, please connect to the internet and set up an API key.';
+      'I\'m running completely offline on your device. Your conversations stay private and secure.';
   
   static const String errorMessage = 
-      'Sorry, something went wrong. Please try again or check your connection.';
+      'Sorry, something went wrong. Please try again.';
   
-  static const String typingIndicator = 'Typing...';
+  static const String typingIndicator = 'Thinking...';
+  static const String modelLoading = 'Loading AI model...';
+  static const String privacyMessage = 
+      'Your privacy is our priority. All AI processing happens locally on your device.';
 }
 
 /// Sample agent suggestions

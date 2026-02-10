@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/agent_model.dart';
 import '../models/message_model.dart';
 import '../services/storage_service.dart';
-import '../services/api_service.dart';
+import '../services/local_llm_service.dart';
 import '../services/rag_service.dart';
 import '../services/offline_qa_service.dart';
 import '../services/voice_service.dart';
@@ -31,7 +32,6 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final StorageService _storage = StorageService();
-  final ApiService _apiService = ApiService();
   final RAGService _ragService = RAGService();
   final OfflineQAService _qaService = OfflineQAService();
   final VoiceService _voiceService = VoiceService();
@@ -44,12 +44,21 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = true;
   bool _isTyping = false;
   bool _autoSpeak = false;
+  String _generationStatus = '';
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
     _loadSettings();
+    _initializeLLM();
+  }
+
+  Future<void> _initializeLLM() async {
+    final llmService = context.read<LocalLLMService>();
+    if (llmService.state == LLMServiceState.uninitialized) {
+      await llmService.initialize();
+    }
   }
 
   Future<void> _loadMessages() async {
@@ -112,22 +121,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _getResponse(String userText) async {
+    final llmService = context.read<LocalLLMService>();
+    
     try {
-      // Check if API key exists
-      final hasApiKey = await _storage.hasApiKey();
-      
-      if (!hasApiKey) {
-        // Use offline QA for TuTu agent
-        if (widget.agent.isDefault) {
-          final answer = await _qaService.getAnswerOrFallback(userText);
-          _addAgentMessage(answer, isOffline: true);
-        } else {
-          _addErrorMessage('API key required for this agent. Please set up in Settings.');
-        }
-        return;
-      }
-
-      // For TuTu, try offline QA first
+      // For TuTu (default agent), try offline QA first
       if (widget.agent.isDefault) {
         final qaResult = await _qaService.findAnswer(userText);
         if (qaResult != null && qaResult.isMatch) {
@@ -136,45 +133,49 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       }
 
-      // Get relevant memories for context
-      final memories = await _ragService.searchMemory(
-        agentId: widget.agent.id,
-        query: userText,
-      );
-
-      // Build system prompt with context
-      String systemPrompt = widget.agent.systemPrompt;
-      if (memories.isNotEmpty) {
-        final memoryContext = memories
-            .map((m) => '- ${m.memory.content}')
-            .join('\n');
-        systemPrompt += '\n\nRelevant memories:\n$memoryContext';
+      // Check if LLM is ready
+      if (!llmService.isReady) {
+        setState(() => _generationStatus = 'Loading AI model...');
+        // Wait for initialization
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (!llmService.isReady) {
+          _addAgentMessage(
+            'I\'m still setting up. Please wait a moment and try again.',
+            isOffline: true,
+          );
+          return;
+        }
       }
 
-      // Call API
-      final response = await _apiService.sendMessage(
+      setState(() => _generationStatus = 'Thinking...');
+
+      // Generate response using local LLM
+      final response = await llmService.sendMessage(
         content: userText,
         agent: widget.agent,
         conversationHistory: _messages,
-        systemPrompt: systemPrompt,
       );
 
-      _addAgentMessage(response.content);
+      _addAgentMessage(
+        response.content,
+        isOffline: false,
+        metadata: response.metadata,
+      );
 
-    } on ApiException catch (e) {
+    } catch (e) {
+      // Fallback to offline QA for default agent
       if (widget.agent.isDefault) {
-        // Fallback to offline QA
         final answer = await _qaService.getAnswerOrFallback(userText);
         _addAgentMessage(answer, isOffline: true);
       } else {
-        _addErrorMessage(e.type.displayMessage);
+        _addErrorMessage('I\'m having trouble thinking right now. Please try again.');
       }
-    } catch (e) {
-      _addErrorMessage('Something went wrong. Please try again.');
+    } finally {
+      setState(() => _generationStatus = '');
     }
   }
 
-  void _addAgentMessage(String content, {bool isOffline = false}) {
+  void _addAgentMessage(String content, {bool isOffline = false, Map<String, dynamic>? metadata}) {
     final message = Message(
       id: _uuid.v4(),
       agentId: widget.agent.id,
@@ -182,6 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
       content: content,
       timestamp: DateTime.now(),
       isOfflineResponse: isOffline,
+      metadata: metadata,
     );
 
     setState(() {
@@ -204,7 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
       id: _uuid.v4(),
       agentId: widget.agent.id,
       role: 'assistant',
-      content: 'Sorry, I encountered an error.',
+      content: 'Sorry, I encountered an issue.',
       timestamp: DateTime.now(),
       errorMessage: error,
     );
@@ -235,10 +237,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _pickImage() async {
-    // Placeholder for image/camera functionality
-    Helpers.showSnackbar(
+    // Navigate to camera screen
+    Navigator.pushNamed(
       context,
-      message: 'Camera feature coming soon!',
+      Routes.camera,
+      arguments: widget.agent.id,
     );
   }
 
@@ -270,13 +273,15 @@ class _ChatScreenState extends State<ChatScreen> {
         agentName: widget.agent.name,
         agentAvatar: widget.agent.avatar,
         isTyping: _isTyping,
-        subtitle: widget.agent.isDefault ? 'Always here to help' : null,
+        subtitle: widget.agent.isDefault ? 'Offline AI • Local Processing' : null,
         onSettings: () {
           // Show agent settings
         },
       ),
       body: Column(
         children: [
+          // LLM Status indicator
+          _buildLLMStatusBar(),
           // Messages list
           Expanded(
             child: _isLoading
@@ -307,11 +312,90 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
           ),
           // Typing indicator
-          if (_isTyping) const TypingIndicator(),
+          if (_isTyping) TypingIndicator(status: _generationStatus),
           // Input area
           _buildInputArea(),
         ],
       ),
+    );
+  }
+
+  Widget _buildLLMStatusBar() {
+    return Consumer<LocalLLMService>(
+      builder: (context, llmService, child) {
+        if (llmService.state == LLMServiceState.ready) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            color: Colors.green.withOpacity(0.1),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.offline_bolt, size: 14, color: Colors.green.shade700),
+                const SizedBox(width: 6),
+                Text(
+                  'Running locally on your device',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else if (llmService.state == LLMServiceState.loading) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            color: Colors.orange.withOpacity(0.1),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.orange.shade700,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Loading AI model...',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.orange.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else if (llmService.state == LLMServiceState.error) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            color: Colors.red.withOpacity(0.1),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 14, color: Colors.red.shade700),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'AI Error: ${llmService.error ?? "Unknown"}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.red.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 
@@ -352,6 +436,31 @@ class _ChatScreenState extends State<ChatScreen> {
                 color: context.colors.onSurface.withOpacity(0.6),
               ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            // Offline badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.green.withOpacity(0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.offline_bolt, size: 16, color: Colors.green.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    '100% Offline • No Internet Needed',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
             if (!widget.agent.isDefault && 
                 AgentRoles.getDefaultPersonality(widget.agent.role) != widget.agent.personality) ...[

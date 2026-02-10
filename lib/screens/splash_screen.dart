@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../services/storage_service.dart';
 import '../services/offline_qa_service.dart';
+import '../services/local_llm_service.dart';
 import '../utils/constants.dart';
 import '../utils/themes.dart';
 
@@ -23,6 +26,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   bool _isLoading = true;
   String _loadingText = 'Initializing...';
+  double _loadingProgress = 0.0;
 
   @override
   void initState() {
@@ -57,19 +61,39 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _initializeApp() async {
     try {
       // Initialize storage
-      setState(() => _loadingText = 'Setting up database...');
+      setState(() {
+        _loadingText = 'Setting up database...';
+        _loadingProgress = 0.2;
+      });
       await _storage.initialize();
 
       // Initialize QA bank
-      setState(() => _loadingText = 'Loading knowledge base...');
+      setState(() {
+        _loadingText = 'Loading knowledge base...';
+        _loadingProgress = 0.4;
+      });
       await _qaService.initialize();
 
+      // Initialize Local LLM (this may take a while on first run)
+      setState(() {
+        _loadingText = 'Preparing AI model...';
+        _loadingProgress = 0.6;
+      });
+      
+      final llmService = context.read<LocalLLMService>();
+      if (llmService.state == LLMServiceState.uninitialized) {
+        await llmService.initialize();
+      }
+
+      setState(() {
+        _loadingProgress = 1.0;
+      });
+
       // Small delay for smooth transition
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(const Duration(milliseconds: 500));
 
       // Check if onboarding is completed
       final isOnboardingCompleted = _storage.isOnboardingCompleted;
-      final hasApiKey = await _storage.hasApiKey();
 
       if (mounted) {
         if (!isOnboardingCompleted) {
@@ -168,13 +192,14 @@ class _SplashScreenState extends State<SplashScreen>
                 // Loading indicator
                 if (_isLoading) ...[
                   SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: CircularProgressIndicator(
+                    width: 200,
+                    child: LinearProgressIndicator(
+                      value: _loadingProgress > 0 ? _loadingProgress : null,
                       valueColor: AlwaysStoppedAnimation<Color>(
                         Colors.white.withOpacity(0.8),
                       ),
-                      strokeWidth: 3,
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -183,6 +208,14 @@ class _SplashScreenState extends State<SplashScreen>
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'This may take a moment on first launch',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.5),
                     ),
                   ),
                 ],

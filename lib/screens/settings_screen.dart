@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../services/storage_service.dart';
+import '../services/local_llm_service.dart';
 import '../utils/constants.dart';
 import '../utils/helpers.dart';
 
@@ -104,12 +107,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final llmService = context.watch<LocalLLMService>();
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
       ),
       body: ListView(
         children: [
+          // Privacy Banner
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.green.shade50,
+                  Colors.teal.shade50,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.green.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.offline_bolt, color: Colors.green.shade700, size: 32),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '100% Private & Offline',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'All AI processing happens on your device. No data is sent to any server.',
+                        style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           // User Profile Section
           _buildSectionHeader('User Profile'),
           ListTile(
@@ -135,6 +185,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           
+          // Local AI Model Section
+          _buildSectionHeader('Local AI Model'),
+          Consumer<LocalLLMService>(
+            builder: (context, service, child) {
+              return ListTile(
+                leading: Icon(
+                  Icons.memory,
+                  color: service.isReady ? Colors.green : Colors.orange,
+                ),
+                title: const Text('Model Status'),
+                subtitle: Text(
+                  service.isReady
+                      ? '${service.modelName} • Ready'
+                      : service.state == LLMServiceState.loading
+                          ? 'Loading...'
+                          : 'Error: ${service.error ?? "Unknown"}',
+                ),
+                trailing: service.state == LLMServiceState.loading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.modelManager);
+                },
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.download),
+            title: const Text('Manage Models'),
+            subtitle: const Text('Download or switch AI models'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.pushNamed(context, Routes.modelManager);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('System Info'),
+            subtitle: Text(llmService.systemInfo.replaceAll('\n', ' • ')),
+          ),
+          
           // Voice Section
           _buildSectionHeader('Voice'),
           SwitchListTile(
@@ -156,27 +251,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.pushNamed(context, Routes.voiceSettings);
-            },
-          ),
-          
-          // API Configuration Section
-          _buildSectionHeader('API Configuration'),
-          ListTile(
-            leading: const Icon(Icons.key),
-            title: const Text('API Setup'),
-            subtitle: const Text('Configure LLM providers'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              Navigator.pushNamed(context, Routes.apiSetup);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.account_balance_wallet),
-            title: const Text('OpenRouter Dashboard'),
-            subtitle: const Text('Balance, usage, and models'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              Navigator.pushNamed(context, Routes.openRouterDashboard);
             },
           ),
           
@@ -231,9 +305,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.privacy_tip),
             title: const Text('Privacy Policy'),
+            subtitle: const Text('Your data never leaves your device'),
             trailing: const Icon(Icons.open_in_new, size: 18),
             onTap: () {
-              // Open privacy policy
+              // Show privacy policy dialog
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Privacy Policy'),
+                  content: const SingleChildScrollView(
+                    child: Text(
+                      'TuTu is designed with privacy as the top priority.\n\n'
+                      '• All AI processing happens locally on your device\n'
+                      '• No data is sent to any external servers\n'
+                      '• Your conversations are stored only on your device\n'
+                      '• Face recognition data is processed locally\n'
+                      '• No API keys or account required\n\n'
+                      'You have complete control over your data.',
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
           ListTile(

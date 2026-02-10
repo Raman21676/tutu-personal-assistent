@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../services/storage_service.dart';
 import '../utils/constants.dart';
 import '../utils/helpers.dart';
 import '../utils/themes.dart';
@@ -18,7 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingPage> _pages = [
     const OnboardingPage(
       title: 'Welcome to TuTu',
-      description: 'Your personal AI agent manager with persistent memory and offline capabilities.',
+      description: 'Your personal AI assistant that runs entirely on your device. No internet required, complete privacy.',
       icon: '🐧',
     ),
     const OnboardingPage(
@@ -32,9 +35,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       icon: '🧠',
     ),
     const OnboardingPage(
-      title: 'Privacy First',
-      description: 'All data stays on your device. Face recognition, voice synthesis, and memories work offline.',
+      title: '100% Private & Offline',
+      description: 'All AI processing happens on your device. Face recognition, voice synthesis, and memories work without internet. Your data never leaves your phone.',
       icon: '🔒',
+    ),
+    const OnboardingPage(
+      title: 'Ready to Start',
+      description: 'Your AI model is ready. Let\'s create your first agent and start chatting!',
+      icon: '🚀',
     ),
   ];
 
@@ -45,12 +53,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.pushReplacementNamed(context, Routes.apiSetup);
+      _completeOnboarding();
     }
   }
 
   void _skipOnboarding() {
-    Navigator.pushReplacementNamed(context, Routes.apiSetup);
+    _completeOnboarding();
+  }
+
+  void _completeOnboarding() async {
+    // Mark onboarding as completed
+    final storage = StorageService();
+    await storage.setOnboardingCompleted(true);
+    
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, Routes.home);
+    }
   }
 
   @override
