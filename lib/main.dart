@@ -7,6 +7,7 @@ import 'models/agent_model.dart';
 // Services
 import 'services/storage_service.dart';
 import 'services/local_llm_service.dart';
+import 'services/threading_service.dart';
 
 // Screens
 import 'screens/splash_screen.dart';
@@ -37,9 +38,16 @@ class TuTuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // Core Services
         Provider<StorageService>(
           create: (_) => StorageService(),
         ),
+        Provider<ThreadingService>(
+          create: (_) => ThreadingService()..initialize(),
+          dispose: (_, service) => service.dispose(),
+        ),
+        
+        // Change Notifiers
         ChangeNotifierProvider<LocalLLMService>(
           create: (_) => LocalLLMService(),
         ),
