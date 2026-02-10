@@ -35,7 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               subtitle!,
               style: context.textTheme.bodySmall?.copyWith(
-                color: context.colors.onSurface.withOpacity(0.7),
+                color: context.colors.onSurface.withAlpha(179),
               ),
             ),
         ],
@@ -128,7 +128,7 @@ class AgentAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Text(
                     subtitle!,
                     style: context.textTheme.bodySmall?.copyWith(
-                      color: context.colors.onSurface.withOpacity(0.6),
+                      color: context.colors.onSurface.withAlpha(153),
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -199,7 +199,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
                 hintText: 'Search...',
                 border: InputBorder.none,
                 hintStyle: TextStyle(
-                  color: context.colors.onSurface.withOpacity(0.5),
+                  color: context.colors.onSurface.withAlpha(128),
                 ),
               ),
               style: context.textTheme.titleMedium,

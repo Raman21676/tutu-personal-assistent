@@ -168,20 +168,20 @@ class _AgentListScreenState extends State<AgentListScreen> {
             Icon(
               Icons.search_off,
               size: 64,
-              color: context.colors.onSurface.withOpacity(0.3),
+              color: context.colors.onSurface.withAlpha(77),
             ),
             const SizedBox(height: 16),
             Text(
               'No agents found',
               style: context.textTheme.titleMedium?.copyWith(
-                color: context.colors.onSurface.withOpacity(0.5),
+                color: context.colors.onSurface.withAlpha(128),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'Try a different search term',
               style: context.textTheme.bodyMedium?.copyWith(
-                color: context.colors.onSurface.withOpacity(0.4),
+                color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
               ),
             ),
           ],
@@ -196,20 +196,20 @@ class _AgentListScreenState extends State<AgentListScreen> {
           Icon(
             Icons.people_outline,
             size: 64,
-            color: context.colors.onSurface.withOpacity(0.3),
+            color: context.colors.onSurface.withAlpha(77),
           ),
           const SizedBox(height: 16),
           Text(
             'No agents yet',
             style: context.textTheme.titleMedium?.copyWith(
-              color: context.colors.onSurface.withOpacity(0.5),
+              color: context.colors.onSurface.withAlpha(128),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Create your first AI companion!',
             style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colors.onSurface.withOpacity(0.4),
+              color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
             ),
           ),
           const SizedBox(height: 24),

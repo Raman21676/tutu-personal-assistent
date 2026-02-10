@@ -130,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             'Who would you like to chat with today?',
                             style: context.textTheme.bodyLarge?.copyWith(
-                              color: context.colors.onSurface.withOpacity(0.6),
+                              color: context.colors.onSurface.withAlpha(153),
                             ),
                           ),
                         ],
@@ -158,9 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withAlpha(26),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.green.withOpacity(0.2)),
+                          border: Border.all(color: Colors.green.withAlpha(51)),
                         ),
                         child: Row(
                           children: [
@@ -239,20 +239,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icon(
                                 Icons.people_outline,
                                 size: 64,
-                                color: context.colors.onSurface.withOpacity(0.3),
+                                color: context.colors.onSurface.withAlpha(77),
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'No agents yet',
                                 style: context.textTheme.titleMedium?.copyWith(
-                                  color: context.colors.onSurface.withOpacity(0.5),
+                                  color: context.colors.onSurface.withAlpha(128),
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Create your first AI companion!',
                                 style: context.textTheme.bodyMedium?.copyWith(
-                                  color: context.colors.onSurface.withOpacity(0.4),
+                                  color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
                                 ),
                               ),
                             ],
@@ -320,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withAlpha(51),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -345,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           '${llmService.modelName} is active',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withAlpha((0.9 * 255).round()),
                             fontSize: 13,
                           ),
                         ),

@@ -221,9 +221,9 @@ class _CameraScreenState extends State<CameraScreen> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black.withOpacity(0.5),
+                            Colors.black.withAlpha(128),
                             Colors.transparent,
-                            Colors.black.withOpacity(0.5),
+                            Colors.black.withAlpha(128),
                           ],
                         ),
                       ),
@@ -271,7 +271,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         height: 250,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withAlpha(128),
                             width: 2,
                           ),
                           borderRadius: BorderRadius.circular(20),
@@ -291,7 +291,7 @@ class _CameraScreenState extends State<CameraScreen> {
                             vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withAlpha(153),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Text(
@@ -324,7 +324,7 @@ class _CameraScreenState extends State<CameraScreen> {
                               ),
                               color: _isProcessing
                                   ? Colors.grey
-                                  : Colors.white.withOpacity(0.2),
+                                  : Colors.white.withAlpha(51),
                             ),
                             child: _isProcessing
                                 ? const CircularProgressIndicator(

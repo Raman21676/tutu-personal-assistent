@@ -232,7 +232,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
                 Text(
                   subtitle,
                   style: context.textTheme.bodySmall?.copyWith(
-                    color: context.colors.onSurface.withOpacity(0.6),
+                    color: context.colors.onSurface.withAlpha(153),
                   ),
                 ),
               ],
@@ -240,7 +240,7 @@ class _VoiceSettingsScreenState extends State<VoiceSettingsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: context.colors.primary.withOpacity(0.1),
+                color: context.colors.primary.withAlpha(26),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

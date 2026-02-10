@@ -232,13 +232,13 @@ class _CreateAgentScreenState extends State<CreateAgentScreen> {
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? context.colors.primary.withOpacity(0.2)
+                        ? context.colors.primary.withAlpha(51)
                         : context.colors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
                           ? context.colors.primary
-                          : context.colors.outline.withOpacity(0.2),
+                          : context.colors.outline.withAlpha(51),
                       width: 2,
                     ),
                   ),
@@ -311,13 +311,13 @@ class _CreateAgentScreenState extends State<CreateAgentScreen> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: isSelected
-              ? context.colors.primary.withOpacity(0.1)
+              ? context.colors.primary.withAlpha(26)
               : context.colors.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
                 ? context.colors.primary
-                : context.colors.outline.withOpacity(0.2),
+                : context.colors.outline.withAlpha(51),
             width: 2,
           ),
         ),

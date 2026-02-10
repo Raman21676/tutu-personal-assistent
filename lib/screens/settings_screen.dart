@@ -271,7 +271,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
               try {
-                final data = await _storage.exportAllData();
+                final _ = await _storage.exportAllData();
                 // In a real app, you would share this data
                 Helpers.showSnackbar(
                   context,

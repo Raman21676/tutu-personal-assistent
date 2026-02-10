@@ -274,7 +274,7 @@ class RAGService {
       'because', 'although', 'though', 'while', 'where', 'when',
       'that', 'which', 'who', 'whom', 'whose', 'what', 'this',
       'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they',
-      'me', 'him', 'her', 'us', 'them', 'my', 'your', 'his', 'her',
+      'me', 'him', 'her', 'us', 'them', 'my', 'your', 'his',
       'its', 'our', 'their', 'mine', 'yours', 'hers', 'ours', 'theirs',
     };
 

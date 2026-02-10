@@ -151,7 +151,6 @@ class _VoicePulseIndicatorState extends State<VoicePulseIndicator>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _rotationController;
-  late Animation<double> _pulseAnimation;
   late Animation<double> _scaleAnimation;
 
   @override
@@ -166,13 +165,6 @@ class _VoicePulseIndicatorState extends State<VoicePulseIndicator>
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
-    );
-    
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.5).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeOut,
-      ),
     );
     
     _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
@@ -436,7 +428,6 @@ class VoiceModeStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isActive = isListening || isSpeaking;
     
     if (!isActive && recognizedText == null) {

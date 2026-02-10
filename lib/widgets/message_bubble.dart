@@ -51,7 +51,7 @@ class MessageBubble extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withAlpha(13),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -76,7 +76,7 @@ class MessageBubble extends StatelessWidget {
                       Text(
                         message.formattedTime,
                         style: context.textTheme.bodySmall?.copyWith(
-                          color: context.colors.onSurface.withOpacity(0.4),
+                          color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
                           fontSize: 11,
                         ),
                       ),
@@ -87,7 +87,7 @@ class MessageBubble extends StatelessWidget {
                           child: Icon(
                             Icons.volume_up,
                             size: 14,
-                            color: context.colors.onSurface.withOpacity(0.4),
+                            color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
                           ),
                         ),
                       ],
@@ -155,11 +155,11 @@ class MessageBubble extends StatelessWidget {
           color: textColor,
         ),
         code: context.textTheme.bodyMedium?.copyWith(
-          backgroundColor: Colors.black.withOpacity(0.1),
+          backgroundColor: Colors.black.withAlpha(26),
           fontFamily: 'monospace',
         ),
         codeblockDecoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withAlpha(26),
           borderRadius: BorderRadius.circular(8),
         ),
       ),
@@ -325,7 +325,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: context.colors.onSurface.withOpacity(0.4),
+              color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
               shape: BoxShape.circle,
             ),
           ),
@@ -352,14 +352,14 @@ class DateSeparator extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
           color: context.isDarkMode 
-              ? Colors.white.withOpacity(0.1) 
-              : Colors.black.withOpacity(0.05),
+              ? Colors.white.withAlpha(26) 
+              : Colors.black.withAlpha(13),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
           date,
           style: context.textTheme.bodySmall?.copyWith(
-            color: context.colors.onSurface.withOpacity(0.6),
+            color: context.colors.onSurface.withAlpha(153),
           ),
         ),
       ),

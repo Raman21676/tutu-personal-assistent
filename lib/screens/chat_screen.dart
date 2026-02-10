@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -10,7 +9,6 @@ import '../services/local_llm_service.dart';
 import '../services/rag_service.dart';
 import '../services/offline_qa_service.dart';
 import '../services/voice_service.dart';
-import '../services/face_recognition_service.dart';
 import '../utils/constants.dart';
 import '../utils/helpers.dart';
 import '../utils/themes.dart';
@@ -21,10 +19,7 @@ import '../widgets/custom_app_bar.dart';
 class ChatScreen extends StatefulWidget {
   final Agent agent;
 
-  const ChatScreen({
-    super.key,
-    required this.agent,
-  });
+  const ChatScreen({super.key, required this.agent});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -35,7 +30,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final RAGService _ragService = RAGService();
   final OfflineQAService _qaService = OfflineQAService();
   final VoiceService _voiceService = VoiceService();
-  final FaceRecognitionService _faceService = FaceRecognitionService();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final _uuid = const Uuid();
@@ -122,25 +116,35 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _getResponse(String userText) async {
     final llmService = context.read<LocalLLMService>();
-    
+
     try {
-      // For TuTu (default agent), try offline QA first
+      // For TuTu (default agent), check offline QA only for common questions
+      // to provide quick answers, but always try LLM if no match
       if (widget.agent.isDefault) {
         final qaResult = await _qaService.findAnswer(userText);
-        if (qaResult != null && qaResult.isMatch) {
+        if (qaResult != null &&
+            qaResult.isMatch &&
+            qaResult.confidence > 0.85) {
+          // Only use QA if confidence is very high (app usage questions)
           _addAgentMessage(qaResult.entry.answer, isOffline: true);
           return;
         }
       }
 
-      // Check if LLM is ready
+      // Check if LLM is ready, if not, wait for initialization
       if (!llmService.isReady) {
         setState(() => _generationStatus = 'Loading AI model...');
-        // Wait for initialization
-        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Wait up to 5 seconds for LLM to be ready
+        int retries = 0;
+        while (!llmService.isReady && retries < 10) {
+          await Future.delayed(const Duration(milliseconds: 500));
+          retries++;
+        }
+
         if (!llmService.isReady) {
           _addAgentMessage(
-            'I\'m still setting up. Please wait a moment and try again.',
+            'I\'m still setting up my AI model. This usually takes a few moments on first launch. Please try again in a moment.',
             isOffline: true,
           );
           return;
@@ -161,21 +165,52 @@ class _ChatScreenState extends State<ChatScreen> {
         isOffline: false,
         metadata: response.metadata,
       );
-
     } catch (e) {
-      // Fallback to offline QA for default agent
-      if (widget.agent.isDefault) {
-        final answer = await _qaService.getAnswerOrFallback(userText);
-        _addAgentMessage(answer, isOffline: true);
-      } else {
-        _addErrorMessage('I\'m having trouble thinking right now. Please try again.');
+      // Better error handling - retry once, then show helpful message
+      debugPrint('LLM Error: $e');
+
+      // Try one more time
+      try {
+        if (llmService.isReady) {
+          setState(() => _generationStatus = 'Retrying...');
+          final response = await llmService.sendMessage(
+            content: userText,
+            agent: widget.agent,
+            conversationHistory: _messages,
+          );
+          _addAgentMessage(
+            response.content,
+            isOffline: false,
+            metadata: response.metadata,
+          );
+          return;
+        }
+      } catch (retryError) {
+        debugPrint('LLM Retry Error: $retryError');
       }
+
+      // If still failing, provide helpful message
+      _addAgentMessage(
+        'I\'m having trouble processing your request right now. This might be because:\n\n'
+        '• The AI model is still loading\n'
+        '• Your device is low on memory\n'
+        '• The request is too complex\n\n'
+        'Please try:\n'
+        '• Waiting a moment and trying again\n'
+        '• Simplifying your question\n'
+        '• Restarting the app if the issue persists',
+        isOffline: true,
+      );
     } finally {
       setState(() => _generationStatus = '');
     }
   }
 
-  void _addAgentMessage(String content, {bool isOffline = false, Map<String, dynamic>? metadata}) {
+  void _addAgentMessage(
+    String content, {
+    bool isOffline = false,
+    Map<String, dynamic>? metadata,
+  }) {
     final message = Message(
       id: _uuid.v4(),
       agentId: widget.agent.id,
@@ -201,6 +236,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // ignore: unused_element
   void _addErrorMessage(String error) {
     final message = Message(
       id: _uuid.v4(),
@@ -238,11 +274,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _pickImage() async {
     // Navigate to camera screen
-    Navigator.pushNamed(
-      context,
-      Routes.camera,
-      arguments: widget.agent.id,
-    );
+    Navigator.pushNamed(context, Routes.camera, arguments: widget.agent.id);
   }
 
   void _toggleAutoSpeak() {
@@ -251,7 +283,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ..._storage.getUserPreferences(),
       'auto_speak': _autoSpeak,
     });
-    
+
     Helpers.showSnackbar(
       context,
       message: _autoSpeak ? 'Auto-speak enabled' : 'Auto-speak disabled',
@@ -273,7 +305,9 @@ class _ChatScreenState extends State<ChatScreen> {
         agentName: widget.agent.name,
         agentAvatar: widget.agent.avatar,
         isTyping: _isTyping,
-        subtitle: widget.agent.isDefault ? 'Offline AI • Local Processing' : null,
+        subtitle: widget.agent.isDefault
+            ? 'Offline AI • Local Processing'
+            : null,
         onSettings: () {
           // Show agent settings
         },
@@ -287,29 +321,29 @@ class _ChatScreenState extends State<ChatScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _messages.isEmpty
-                    ? _buildWelcomeMessage()
-                    : ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) {
-                          final message = _messages[index];
-                          final showDate = index == 0 ||
-                              _messages[index - 1].dateString != message.dateString;
+                ? _buildWelcomeMessage()
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      final showDate =
+                          index == 0 ||
+                          _messages[index - 1].dateString != message.dateString;
 
-                          return Column(
-                            children: [
-                              if (showDate)
-                                DateSeparator(date: message.dateString),
-                              MessageBubble(
-                                message: message,
-                                agentAvatar: widget.agent.avatar,
-                                onSpeak: () => _speakMessage(message.content),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                      return Column(
+                        children: [
+                          if (showDate) DateSeparator(date: message.dateString),
+                          MessageBubble(
+                            message: message,
+                            agentAvatar: widget.agent.avatar,
+                            onSpeak: () => _speakMessage(message.content),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
           ),
           // Typing indicator
           if (_isTyping) const TypingIndicator(),
@@ -326,11 +360,15 @@ class _ChatScreenState extends State<ChatScreen> {
         if (llmService.state == LLMServiceState.ready) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withAlpha(26),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.offline_bolt, size: 14, color: Colors.green.shade700),
+                Icon(
+                  Icons.offline_bolt,
+                  size: 14,
+                  color: Colors.green.shade700,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   'Running locally on your device',
@@ -346,7 +384,7 @@ class _ChatScreenState extends State<ChatScreen> {
         } else if (llmService.state == LLMServiceState.loading) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withAlpha(26),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -373,7 +411,7 @@ class _ChatScreenState extends State<ChatScreen> {
         } else if (llmService.state == LLMServiceState.error) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withAlpha(26),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -433,7 +471,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ? DefaultMessages.welcomeMessage
                   : 'I\'m your ${AgentRoles.getDisplayName(widget.agent.role).toLowerCase()}. How can I help you today?',
               style: context.textTheme.bodyLarge?.copyWith(
-                color: context.colors.onSurface.withOpacity(0.6),
+                color: context.colors.onSurface.withAlpha(153),
               ),
               textAlign: TextAlign.center,
             ),
@@ -442,14 +480,18 @@ class _ChatScreenState extends State<ChatScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withAlpha(26),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.green.withOpacity(0.3)),
+                border: Border.all(color: Colors.green.withAlpha(77)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.offline_bolt, size: 16, color: Colors.green.shade700),
+                  Icon(
+                    Icons.offline_bolt,
+                    size: 16,
+                    color: Colors.green.shade700,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '100% Offline • No Internet Needed',
@@ -462,13 +504,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
             ),
-            if (!widget.agent.isDefault && 
-                AgentRoles.getDefaultPersonality(widget.agent.role) != widget.agent.personality) ...[
+            if (!widget.agent.isDefault &&
+                AgentRoles.getDefaultPersonality(widget.agent.role) !=
+                    widget.agent.personality) ...[
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: context.colors.primary.withOpacity(0.1),
+                  color: context.colors.primary.withAlpha(26),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -493,7 +536,7 @@ class _ChatScreenState extends State<ChatScreen> {
         color: context.colors.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -506,7 +549,7 @@ class _ChatScreenState extends State<ChatScreen> {
             IconButton(
               icon: const Icon(Icons.camera_alt),
               onPressed: _pickImage,
-              color: context.colors.onSurface.withOpacity(0.6),
+              color: context.colors.onSurface.withAlpha(153),
             ),
             // Auto-speak toggle
             IconButton(
@@ -514,7 +557,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: _toggleAutoSpeak,
               color: _autoSpeak
                   ? context.colors.primary
-                  : context.colors.onSurface.withOpacity(0.6),
+                  : context.colors.onSurface.withAlpha(153),
             ),
             // Text input
             Expanded(

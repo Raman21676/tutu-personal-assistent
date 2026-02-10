@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../utils/emoji_data.dart';
+import '../utils/themes.dart';
 
 /// Emoji Picker Grid - Categorized emoji selection for agent creation
 class EmojiPickerGrid extends StatefulWidget {

@@ -144,7 +144,7 @@ class _SplashScreenState extends State<SplashScreen>
                             borderRadius: BorderRadius.circular(40),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withAlpha(51),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -183,7 +183,7 @@ class _SplashScreenState extends State<SplashScreen>
                     AppConstants.appTagline,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withAlpha((0.8 * 255).round()),
                       letterSpacing: 1,
                     ),
                   ),
@@ -196,9 +196,9 @@ class _SplashScreenState extends State<SplashScreen>
                     child: LinearProgressIndicator(
                       value: _loadingProgress > 0 ? _loadingProgress : null,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withOpacity(0.8),
+                        Colors.white.withAlpha((0.8 * 255).round()),
                       ),
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: Colors.white.withAlpha(51),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -207,7 +207,7 @@ class _SplashScreenState extends State<SplashScreen>
                     _loadingText,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withAlpha(179),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -215,7 +215,7 @@ class _SplashScreenState extends State<SplashScreen>
                     'This may take a moment on first launch',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withAlpha(128),
                     ),
                   ),
                 ],

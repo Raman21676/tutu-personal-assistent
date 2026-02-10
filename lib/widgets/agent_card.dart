@@ -61,7 +61,7 @@ class AgentCard extends StatelessWidget {
               Text(
                 AgentRoles.getDisplayName(agent.role),
                 style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colors.onSurface.withOpacity(0.6),
+                  color: context.colors.onSurface.withAlpha(153),
                 ),
               ),
             ],
@@ -72,7 +72,7 @@ class AgentCard extends StatelessWidget {
           Text(
             _formatLastInteraction(),
             style: context.textTheme.bodySmall?.copyWith(
-              color: context.colors.onSurface.withOpacity(0.4),
+              color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
               fontSize: 11,
             ),
           ),
@@ -104,7 +104,7 @@ class AgentCard extends StatelessWidget {
                   Text(
                     AgentRoles.getDisplayName(agent.role),
                     style: context.textTheme.bodySmall?.copyWith(
-                      color: context.colors.onSurface.withOpacity(0.6),
+                      color: context.colors.onSurface.withAlpha(153),
                     ),
                   ),
                 ],
@@ -114,7 +114,7 @@ class AgentCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: context.colors.primary.withOpacity(0.1),
+                  color: context.colors.primary.withAlpha(26),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -135,7 +135,7 @@ class AgentCard extends StatelessWidget {
               Text(
                 'Last active: ${_formatLastInteraction()}',
                 style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colors.onSurface.withOpacity(0.5),
+                  color: context.colors.onSurface.withAlpha(128),
                 ),
               ),
               if (agent.voiceGender != null)
@@ -144,7 +144,7 @@ class AgentCard extends StatelessWidget {
                       ? Icons.female 
                       : Icons.male,
                   size: 16,
-                  color: context.colors.onSurface.withOpacity(0.4),
+                  color: context.colors.onSurface.withAlpha((0.4 * 255).round()),
                 ),
             ],
           ),
@@ -280,7 +280,7 @@ class AgentGridItem extends StatelessWidget {
               Text(
                 AgentRoles.getDisplayName(agent.role),
                 style: context.textTheme.bodySmall?.copyWith(
-                  color: context.colors.onSurface.withOpacity(0.6),
+                  color: context.colors.onSurface.withAlpha(153),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -310,12 +310,12 @@ class AddAgentButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: context.colors.primary.withOpacity(0.3),
+          color: context.colors.primary.withAlpha(77),
           width: 2,
           style: BorderStyle.solid,
         ),
       ),
-      color: context.colors.primary.withOpacity(0.05),
+      color: context.colors.primary.withAlpha(13),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),

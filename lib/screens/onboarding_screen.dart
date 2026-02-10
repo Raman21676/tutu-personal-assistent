@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../services/storage_service.dart';
 import '../utils/constants.dart';
@@ -121,7 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         decoration: BoxDecoration(
                           color: _currentPage == index
                               ? context.colors.primary
-                              : context.colors.primary.withOpacity(0.3),
+                              : context.colors.primary.withAlpha(77),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -189,7 +188,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             page.description,
             style: context.textTheme.bodyLarge?.copyWith(
-              color: context.colors.onSurface.withOpacity(0.7),
+              color: context.colors.onSurface.withAlpha(179),
               height: 1.5,
             ),
             textAlign: TextAlign.center,
