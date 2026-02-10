@@ -1,7 +1,7 @@
 name: tutu_app
-description: "TuTu - Your Personal AI Agent Manager with Azure Neural Voice"
+description: "TuTu - Your Personal Offline AI Assistant with Local LLM"
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.0.0+1
 
 environment:
   sdk: ^3.10.8
@@ -11,14 +11,14 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   
+  # FFI for native C++ bindings
+  ffi: ^2.1.0
+  
   # Storage & Database
   shared_preferences: ^2.2.2
   sqflite: ^2.3.0
   path_provider: ^2.1.1
   sembast: ^3.5.0
-  
-  # Networking
-  http: ^1.1.0
   
   # State Management
   provider: ^6.1.1
@@ -35,15 +35,14 @@ dependencies:
   shimmer: ^3.0.0
   flutter_chat_bubble: ^2.0.2
   
-  # Voice - Azure TTS
+  # Voice - Device TTS (Offline)
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
+  permission_handler: ^11.3.0
   just_audio: ^0.9.42
   audio_session: ^0.1.21
   
-  # Voice - Device
-  speech_to_text: ^7.0.0
-  permission_handler: ^11.3.0
-  
-  # Camera & Vision
+  # Camera & Vision (Offline ML)
   camera: ^0.11.0
   image_picker: ^1.0.7
   google_mlkit_face_detection: ^0.13.0
@@ -67,6 +66,12 @@ flutter:
   uses-material-design: true
   
   assets:
+    # Local LLM Model (bundled with app)
+    - assets/models/SmolLM2-360M-Instruct-Q4_K_M.gguf
+    
+    # Knowledge base
     - assets/qa_bank.json
+    
+    # Media assets
     - assets/images/
     - assets/audio/
