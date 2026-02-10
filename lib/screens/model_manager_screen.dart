@@ -105,7 +105,7 @@ class _ModelManagerScreenState extends State<ModelManagerScreen> {
         id: 'phi-2-q4',
         name: 'Phi-2',
         description: 'Microsoft\'s small but powerful model',
-        sizeBytes: 1.6 * 1024 * 1024 * 1024,
+        sizeBytes: (1.6 * 1024 * 1024 * 1024).toInt(),
         parameters: 2700,
         quantization: 'Q4_K_M',
         downloadUrl: 'https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf',

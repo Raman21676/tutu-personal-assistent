@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.tutu_app"
     compileSdk = 36
-    ndkVersion = "25.1.8937393"  // Updated for llama.cpp compatibility
+    ndkVersion = "28.2.13676358"  // Updated for plugin compatibility
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

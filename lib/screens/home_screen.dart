@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: AgentCard(
                           agent: _agents.first,
                           onTap: () => _openChat(_agents.first),
-                          isHighlighted: true,
+                          // Default agent card highlighted
                         ),
                       ),
                     ),

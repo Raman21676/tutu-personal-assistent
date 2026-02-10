@@ -10,7 +10,7 @@ import '../models/agent_model.dart';
 import '../models/message_model.dart';
 import '../models/memory_model.dart';
 import '../models/face_model.dart';
-import '../models/api_config_model.dart';
+// API config removed - app is now fully offline
 
 /// Storage Service - Manages all local data persistence
 /// Uses Sembast for NoSQL data and SharedPreferences for settings
@@ -298,35 +298,27 @@ class StorageService {
     return records.map((r) => ConversationSummary.fromJson(r.value)).toList();
   }
 
-  // ==================== API CONFIG OPERATIONS ====================
+  // ==================== API CONFIG OPERATIONS (DEPRECATED) ====================
+  // NOTE: API config removed - app is now fully offline with local LLM
 
-  /// Save API configuration
-  Future<void> saveApiConfig(ApiConfig config) async {
-    final json = jsonEncode(config.toJson());
-    await _prefs!.setString('api_config', json);
+  /// Deprecated: API config no longer used
+  @deprecated
+  Future<void> saveApiConfig(dynamic config) async {
+    // No-op: App uses local LLM only
   }
 
-  /// Get API configuration
-  Future<ApiConfig?> getApiConfig() async {
-    final json = _prefs!.getString('api_config');
-    if (json == null) return null;
-    try {
-      return ApiConfig.fromJson(jsonDecode(json));
-    } catch (e) {
-      return null;
-    }
-  }
+  /// Deprecated: Always returns null (offline mode)
+  @deprecated
+  Future<dynamic> getApiConfig() async => null;
 
-  /// Clear API configuration
+  /// Deprecated: No-op
+  @deprecated
   Future<void> clearApiConfig() async {
-    await _prefs!.remove('api_config');
+    // No-op: App uses local LLM only
   }
 
-  /// Check if API key exists
-  Future<bool> hasApiKey() async {
-    final config = await getApiConfig();
-    return config != null && config.apiKey.isNotEmpty;
-  }
+  /// Always returns true - offline mode uses local LLM
+  Future<bool> hasApiKey() async => true;
 
   // ==================== USER PREFERENCES ====================
 

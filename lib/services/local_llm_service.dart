@@ -245,8 +245,8 @@ class LocalLLMService extends ChangeNotifier {
       }
       
       // Run inference in background isolate
-      final response = await _threading.runInference(
-        () => _runInference(prompt, agent),
+      final response = await _threading.runInference<String>(
+        () async => _runInference(prompt, agent),
         priority: TaskPriority.high,
         taskId: taskId,
       );
@@ -399,8 +399,8 @@ class LocalLLMService extends ChangeNotifier {
       
       // For now, simulate streaming with word-by-word output
       // In production, this would hook into llama.cpp's token callback
-      final fullResponse = await _threading.runInference(
-        () => _runInference(prompt, agent),
+      final fullResponse = await _threading.runInference<String>(
+        () async => _runInference(prompt, agent),
         priority: TaskPriority.high,
         taskId: taskId,
       );

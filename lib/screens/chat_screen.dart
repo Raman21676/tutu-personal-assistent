@@ -312,7 +312,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
           ),
           // Typing indicator
-          if (_isTyping) TypingIndicator(status: _generationStatus),
+          if (_isTyping) const TypingIndicator(),
           // Input area
           _buildInputArea(),
         ],
