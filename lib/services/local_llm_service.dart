@@ -188,14 +188,11 @@ class LocalLLMService extends ChangeNotifier {
       throw Exception('Model path not set');
     }
     
-    final params = LLMModelParams.allocate(
-      modelPath: _modelPath!,
+    final success = _bindings.loadModel(
+      _modelPath!,
       nCtx: 2048,
       nThreads: _optimalThreads,
-      nBatch: 512,
     );
-    
-    final success = _bindings.loadModel(params);
     
     if (!success) {
       throw Exception('Failed to load model: ${_bindings.getLastError()}');
@@ -279,20 +276,7 @@ class LocalLLMService extends ChangeNotifier {
     final stopwatch = Stopwatch()..start();
     
     // Generate response using bindings
-    final params = LLMGenerateParams.allocate(
-      nPredict: 512,
-      temperature: 0.7,
-      topP: 0.9,
-      topK: 40,
-      repeatPenalty: 1.1,
-      repeatLastN: 64,
-      stopSequences: '["<|im_end|>", "User:", "<|endoftext|>"]',
-    );
-    
-    final response = _bindings.generate(
-      prompt,
-      params: params,
-    );
+    final response = _bindings.generate(prompt);
     
     stopwatch.stop();
     

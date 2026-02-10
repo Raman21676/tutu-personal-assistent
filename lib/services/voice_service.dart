@@ -2,6 +2,7 @@
 /// 
 /// Simple offline TTS using flutter_tts
 
+import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../models/agent_model.dart';
@@ -61,5 +62,15 @@ class VoiceService {
   /// Set voice
   Future<void> setVoice(Map<String, String> voice) async {
     await _flutterTts.setVoice(voice);
+  }
+
+  /// Get available languages
+  Future<List<dynamic>> getAvailableLanguages() async {
+    return await _flutterTts.getLanguages;
+  }
+
+  /// Set language
+  Future<void> setLanguage(String language) async {
+    await _flutterTts.setLanguage(language);
   }
 }

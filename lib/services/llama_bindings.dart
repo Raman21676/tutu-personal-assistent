@@ -5,6 +5,7 @@
 
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
@@ -164,7 +165,7 @@ class LlamaBindings {
   /// Generate text from a prompt
   String generate(String prompt) {
     final promptPtr = prompt.toNativeUtf8();
-    final outputBuffer = calloc<Utf8>(8192);
+    final outputBuffer = calloc.allocate<Uint8>(8192).cast<Utf8>();
     
     try {
       final result = _generate(promptPtr, outputBuffer, 8192);
@@ -201,7 +202,7 @@ class LlamaBindings {
   
   /// Get system information
   String get systemInfo {
-    final buffer = calloc<Utf8>(1024);
+    final buffer = calloc.allocate<Uint8>(1024).cast<Utf8>();
     try {
       _getSystemInfo(buffer, 1024);
       return buffer.toDartString();
