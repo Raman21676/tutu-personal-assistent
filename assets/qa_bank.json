@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "question": "What is TuTu?",
+    "answer": "TuTu is your personal AI agent manager app. It allows you to create and customize AI companions with persistent memory, offline capabilities, and advanced features like voice synthesis and face recognition.",
+    "category": "app_usage",
+    "keywords": ["what", "tutu", "app", "about", "is"],
+    "priority": 2.0
+  },
+  {
+    "id": 2,
+    "question": "How do I create a new agent?",
+    "answer": "Tap the '+' button on the home screen, choose a role (Girlfriend, Lawyer, Teacher, etc.), give your agent a name and personality, then tap 'Create Agent'. Your new agent will be ready to chat!",
+    "category": "agent_creation",
+    "keywords": ["create", "new", "agent", "add", "make", "how"],
+    "priority": 2.0
+  },
+  {
+    "id": 3,
+    "question": "How do I set up my API key?",
+    "answer": "Go to Settings > API Configuration. Choose your provider (OpenAI, OpenRouter, etc.), enter your API key, and tap 'Test Connection'. You can get API keys from the provider's website.",
+    "category": "api_setup",
+    "keywords": ["api", "key", "setup", "configure", "openai", "openrouter"],
+    "priority": 2.0
+  },
+  {
+    "id": 4,
+    "question": "Why do I need an API key?",
+    "answer": "An API key allows your agents to use advanced AI models like GPT-4 and Claude. Without it, TuTu can only answer questions from its offline knowledge base.",
+    "category": "api_setup",
+    "keywords": ["why", "need", "api", "key", "required"],
+    "priority": 1.5
+  },
+  {
+    "id": 5,
+    "question": "How does memory work?",
+    "answer": "TuTu has a multi-layer memory system: Active Memory (last 20 messages), Short-term Memory (last 500 messages), and Long-term Memory (all conversations with RAG search). This helps agents remember your conversations.",
+    "category": "features",
+    "keywords": ["memory", "remember", "how", "work", "storage"],
+    "priority": 1.5
+  },
+  {
+    "id": 6,
+    "question": "Can I customize my agent?",
+    "answer": "Yes! You can customize your agent's name, role, personality, avatar, and voice. Tap on any agent to edit their settings.",
+    "category": "agent_customization",
+    "keywords": ["customize", "edit", "change", "personality", "avatar"],
+    "priority": 1.5
+  },
+  {
+    "id": 7,
+    "question": "Is my data private?",
+    "answer": "Yes! All your data is stored locally on your device. Face data and conversations never leave your phone. You can delete all data anytime in Settings.",
+    "category": "privacy",
+    "keywords": ["privacy", "private", "data", "secure", "safe"],
+    "priority": 1.5
+  },
+  {
+    "id": 8,
+    "question": "How do I use voice features?",
+    "answer": "Enable voice in Settings > Voice. In chat, tap the speaker icon on any message to hear it spoken. You can also enable auto-speak to have all responses read aloud.",
+    "category": "voice",
+    "keywords": ["voice", "speak", "talk", "audio", "sound"],
+    "priority": 1.5
+  },
+  {
+    "id": 9,
+    "question": "How does face recognition work?",
+    "answer": "Tap the camera icon in chat to capture a photo. TuTu will detect faces and either recognize them or let you register a new person. This works completely offline.",
+    "category": "face_recognition",
+    "keywords": ["face", "recognition", "camera", "photo", "identify"],
+    "priority": 1.5
+  },
+  {
+    "id": 10,
+    "question": "My API key is not working",
+    "answer": "Make sure you've copied the entire key correctly. Check that you've selected the correct provider. If using OpenRouter, ensure your account has credits. Try testing the connection in Settings.",
+    "category": "troubleshooting",
+    "keywords": ["api", "key", "not working", "error", "problem"],
+    "priority": 1.5
+  },
+  {
+    "id": 11,
+    "question": "What agents can I create?",
+    "answer": "You can create various agents: Girlfriend, Boyfriend, Lawyer, Financial Advisor, Teacher, Friend, Therapist, Career Coach, or fully custom agents with unique personalities.",
+    "category": "agent_creation",
+    "keywords": ["agents", "types", "create", "roles", "options"],
+    "priority": 1.5
+  },
+  {
+    "id": 12,
+    "question": "Can agents talk to each other?",
+    "answer": "Not yet! This is a planned feature. Currently, each agent has its own separate conversations and memories.",
+    "category": "features",
+    "keywords": ["agents", "talk", "each other", "multi-agent", "together"],
+    "priority": 1.0
+  },
+  {
+    "id": 13,
+    "question": "How do I delete an agent?",
+    "answer": "Go to the Agents list, swipe left on the agent you want to delete, or tap and hold for options. Note: The default TuTu agent cannot be deleted.",
+    "category": "agent_creation",
+    "keywords": ["delete", "remove", "agent", "erase"],
+    "priority": 1.5
+  },
+  {
+    "id": 14,
+    "question": "Can I export my data?",
+    "answer": "Yes! Go to Settings > Memory Management > Export Data. You can export all your conversations, agents, and memories as a JSON file.",
+    "category": "features",
+    "keywords": ["export", "backup", "save", "data"],
+    "priority": 1.0
+  },
+  {
+    "id": 15,
+    "question": "What is OpenRouter?",
+    "answer": "OpenRouter is a service that provides access to multiple AI models (GPT-4, Claude, Gemini, etc.) through a single API. It's a great option if you want to try different models.",
+    "category": "api_setup",
+    "keywords": ["openrouter", "what", "api", "models"],
+    "priority": 1.5
+  },
+  {
+    "id": 16,
+    "question": "Can I use TuTu offline?",
+    "answer": "Yes! TuTu works offline with its built-in knowledge base. However, for advanced AI responses, you'll need an internet connection and API key.",
+    "category": "features",
+    "keywords": ["offline", "without internet", "work", "no connection"],
+    "priority": 1.5
+  },
+  {
+    "id": 17,
+    "question": "How do I change my agent's voice?",
+    "answer": "When creating or editing an agent, you can select Male or Female voice. You can also adjust speech rate and pitch in Settings > Voice.",
+    "category": "voice",
+    "keywords": ["voice", "change", "male", "female", "sound"],
+    "priority": 1.0
+  },
+  {
+    "id": 18,
+    "question": "What is the TuTu agent?",
+    "answer": "TuTu is the default assistant that helps you understand and use the app. It can answer questions about features, troubleshooting, and guide you through setup.",
+    "category": "app_usage",
+    "keywords": ["tutu agent", "default", "assistant", "help"],
+    "priority": 1.5
+  },
+  {
+    "id": 19,
+    "question": "How do I switch between agents?",
+    "answer": "Go to the Home screen or Agents tab to see all your agents. Tap on any agent to start chatting with them. Each agent has its own separate conversation history.",
+    "category": "app_usage",
+    "keywords": ["switch", "change", "agents", "between", "different"],
+    "priority": 1.0
+  },
+  {
+    "id": 20,
+    "question": "Can I have multiple agents?",
+    "answer": "Yes! You can create up to 20 different agents, each with unique personalities and purposes. Use them for different tasks or relationships.",
+    "category": "agent_creation",
+    "keywords": ["multiple", "many", "agents", "how many"],
+    "priority": 1.0
+  },
+  {
+    "id": 21,
+    "question": "How do I reset my data?",
+    "answer": "Go to Settings > Clear All Data. This will delete all agents, conversations, and memories. The app will reset to its initial state.",
+    "category": "troubleshooting",
+    "keywords": ["reset", "clear", "delete", "data", "start over"],
+    "priority": 1.0
+  },
+  {
+    "id": 22,
+    "question": "Why isn't my agent responding?",
+    "answer": "Check your internet connection and API key. If using OpenRouter, verify you have sufficient credits. Try restarting the app if the issue persists.",
+    "category": "troubleshooting",
+    "keywords": ["not responding", "no response", "agent not working"],
+    "priority": 1.5
+  },
+  {
+    "id": 23,
+    "question": "What is RAG?",
+    "answer": "RAG (Retrieval Augmented Generation) is how TuTu searches through your conversation history to find relevant information and provide context-aware responses.",
+    "category": "features",
+    "keywords": ["rag", "retrieval", "memory", "search"],
+    "priority": 1.0
+  },
+  {
+    "id": 24,
+    "question": "How do I contact support?",
+    "answer": "Go to Settings > Help & Support. You can also reach out through the app's community channels or check our documentation.",
+    "category": "app_usage",
+    "keywords": ["support", "contact", "help", "issue"],
+    "priority": 1.0
+  },
+  {
+    "id": 25,
+    "question": "Can I change the app theme?",
+    "answer": "Yes! Go to Settings > Appearance to toggle between light and dark mode. The app also respects your system theme settings.",
+    "category": "agent_customization",
+    "keywords": ["theme", "dark mode", "light mode", "appearance"],
+    "priority": 1.0
+  },
+  {
+    "id": 26,
+    "question": "How much does it cost to use?",
+    "answer": "The app is free to use! You only pay for API usage if you choose to connect to external AI providers like OpenAI or OpenRouter. TuTu agent works offline for free.",
+    "category": "app_usage",
+    "keywords": ["cost", "price", "free", "expensive", "pay"],
+    "priority": 1.5
+  },
+  {
+    "id": 27,
+    "question": "Which AI providers are supported?",
+    "answer": "TuTu supports OpenAI, Anthropic (Claude), Google Gemini, DeepSeek, and OpenRouter. You can also configure custom endpoints.",
+    "category": "api_setup",
+    "keywords": ["providers", "models", "openai", "claude", "gemini", "supported"],
+    "priority": 1.5
+  },
+  {
+    "id": 28,
+    "question": "How do I update my API key?",
+    "answer": "Go to Settings > API Configuration. You can update your existing key or switch to a different provider at any time.",
+    "category": "api_setup",
+    "keywords": ["update", "change", "api key", "new key"],
+    "priority": 1.0
+  },
+  {
+    "id": 29,
+    "question": "What happens to my conversations?",
+    "answer": "All conversations are stored locally on your device. They're used by the RAG system to help agents remember context and provide personalized responses.",
+    "category": "privacy",
+    "keywords": ["conversations", "stored", "where", "chat history"],
+    "priority": 1.0
+  },
+  {
+    "id": 30,
+    "question": "Can I share my agents?",
+    "answer": "Currently, agents are private to your device. Export/Import functionality for sharing agent configurations is planned for a future update.",
+    "category": "features",
+    "keywords": ["share", "export", "import", "agents"],
+    "priority": 0.8
+  }
+]
